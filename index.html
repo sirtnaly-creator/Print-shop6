@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<title>الشبعاني لخدمات الطباعة والتصميم</title>
+<meta name="description" content="تطبيق لتسجيل مبيعات ومصروفات مكتب الشبعاني لخدمات الطباعة والتصميم، ومتابعة الأرباح الشهرية.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1F2A37">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F1E6;
+  --paper-deep:#ECE3D1;
+  --ink:#1F2A37;
+  --ink-soft:#4B5A6B;
+  --stamp:#E5432A;
+  --stamp-deep:#C22F18;
+  --teal:#0E9C82;
+  --teal-deep:#077A65;
+  --line:#D9CBAE;
+  --gold:#E8A93B;
+  --white:#FFFDF8;
+  --radius:18px;
+  --shadow: 0 6px 20px -8px rgba(31,42,55,0.25);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Tajawal', sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  min-height:100vh;
+  overflow-x:hidden;
+  background-image:
+    radial-gradient(circle at 0% 0%, rgba(31,111,99,0.05), transparent 40%),
+    radial-gradient(circle at 100% 0%, rgba(181,67,42,0.05), transparent 40%);
+}
+.mono{font-family:'IBM Plex Mono', monospace;}
+#app{
+  max-width:480px;
+  margin:0 auto;
+  min-height:100vh;
+  position:relative;
+  padding-bottom:92px;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ===== Header ===== */
+.topbar{
+  position:sticky; top:0; z-index:30;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+  padding:14px 18px 10px;
+}
+.topbar-row{
+  display:flex; align-items:center; justify-content:space-between;
+}
+.brand{
+  display:flex; align-items:center; gap:10px;
+}
+.brand-mark{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+  flex-shrink:0;
+}
+.brand-mark::before{
+  content:"";
+  position:absolute;
+  inset:7px;
+  border:1.5px solid var(--paper);
+  border-radius:3px;
+}
+.brand-mark::after{
+  content:"٪";
+  color:var(--paper);
+  font-weight:800;
+  font-size:13px;
+  font-family:'IBM Plex Mono', monospace;
+}
+.brand-text h1{
+  font-size:17px; margin:0; font-weight:800; letter-spacing:0.2px;
+}
+.brand-text p{
+  font-size:11px; margin:0; color:var(--ink-soft); font-family:'IBM Plex Mono', monospace;
+}
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1px solid var(--line);
+  background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;
+  cursor:pointer;
+  color:var(--ink);
+}
+.icon-btn:active{ transform:scale(0.93); }
+
+/* Tabs */
+.tabs{
+  display:flex;
+  gap:6px;
+  margin-top:14px;
+  background:var(--paper-deep);
+  padding:4px;
+  border-radius:14px;
+}
+.tab{
+  flex:1;
+  text-align:center;
+  padding:9px 4px;
+  font-size:12.5px;
+  font-weight:700;
+  border-radius:11px;
+  color:var(--ink-soft);
+  cursor:pointer;
+  transition:all .15s ease;
+  user-select:none;
+}
+.tab.active{
+  background:var(--ink);
+  color:var(--paper);
+  box-shadow:var(--shadow);
+}
+
+/* ===== Main scroll area ===== */
+.view{
+  padding:16px 16px 8px;
+  flex:1;
+}
+.hidden{display:none !important;}
+
+/* Month switcher */
+.month-switch{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:10px 8px;
+  margin-bottom:16px;
+}
+.month-switch button{
+  width:34px;height:34px;border-radius:50%;
+  border:none;background:var(--paper-deep);
+  font-size:16px; color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.month-switch button:active{transform:scale(0.9);}
+.month-label{
+  text-align:center;
+}
+.month-label .m{font-weight:800;font-size:15px;}
+.month-label .range{font-size:10.5px;color:var(--ink-soft);font-family:'IBM Plex Mono', monospace; margin-top:2px;}
+
+/* Day strip (today's entry) */
+.section-title{
+  font-size:13px;font-weight:800;color:var(--ink-soft);
+  margin:18px 2px 10px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-title .ln{flex:1;height:1px;background:var(--line);}
+
+.day-card{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow);
+}
+.day-card-head{
+  display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;
+}
+.day-card-head .date-big{font-weight:800;font-size:15px;}
+.day-card-head .date-sub{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono', monospace;}
+.today-pill{
+  background:var(--teal); color:white; font-size:10.5px; font-weight:700;
+  padding:3px 9px; border-radius:20px;
+}
+
+.shift-row{
+  display:flex; gap:10px; margin-bottom:8px;
+}
+.shift-box{
+  flex:1;
+  border:1px dashed var(--line);
+  border-radius:14px;
+  padding:12px 10px;
+  cursor:pointer;
+  position:relative;
+  transition:.15s;
+}
+.shift-box:active{transform:scale(0.97);}
+.shift-box .lbl{
+  font-size:11.5px; font-weight:700; color:var(--ink-soft); display:flex; align-items:center; gap:5px;
+}
+.shift-box .lbl .dot{width:7px;height:7px;border-radius:50%;}
+.shift-box.morning .dot{background:var(--gold);}
+.shift-box.evening .dot{background:var(--teal);}
+.shift-box .amt{
+  font-family:'IBM Plex Mono', monospace; font-weight:600;
+  font-size:18px; margin-top:6px;
+}
+.shift-box .amt.empty{color:#B7AE99; font-size:13px; font-weight:500;}
+.shift-box .cnt{font-size:10px;color:var(--ink-soft); margin-top:2px;}
+.shift-box.filled{border-style:solid; background:var(--paper);}
+
+.day-total{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:10px; padding-top:10px; border-top:1px solid var(--line);
+}
+.day-total .t-lbl{font-size:12px;color:var(--ink-soft);font-weight:700;}
+.day-total .t-val{font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:16px;}
+
+.backdate-btn{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  background:var(--white); border:1.5px dashed var(--line);
+  border-radius:14px; padding:13px; margin:14px 0 4px;
+  font-size:12.5px; font-weight:700; color:var(--ink-soft);
+  cursor:pointer;
+}
+.backdate-btn:active{ transform:scale(0.98); }
+
+/* Stat cards grid */
+.stat-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px;
+}
+.stat-card{
+  border-radius:16px; padding:14px;
+  position:relative; overflow:hidden;
+}
+.stat-card .lbl{font-size:11.5px;font-weight:700;opacity:0.85;}
+.stat-card .val{font-family:'IBM Plex Mono', monospace;font-weight:700;font-size:19px;margin-top:6px;}
+.stat-card.income{background:var(--teal); color:white;}
+.stat-card.expense{background:var(--stamp); color:white;}
+.stat-card.profit{background:var(--ink); color:var(--paper); grid-column:span 2;}
+.stat-card.profit .val{font-size:26px;}
+.stat-card.profit.negative{background:var(--stamp-deep);}
+.stat-card .sub{font-size:10.5px;opacity:0.75;margin-top:3px;}
+
+/* Breakdown list */
+.bd-row{
+  display:flex; justify-content:space-between; align-items:center;
+  background:var(--white); border:1px solid var(--line);
+  border-radius:14px; padding:12px 14px; margin-bottom:8px;
+}
+.bd-row .left{display:flex;align-items:center;gap:10px;}
+.bd-icon{
+  width:34px;height:34px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px; flex-shrink:0;
+}
+.bd-name{font-size:13px;font-weight:700;}
+.bd-count{font-size:10.5px;color:var(--ink-soft);}
+.bd-amt{font-family:'IBM Plex Mono', monospace;font-weight:700;font-size:14px;}
+
+/* Receipt-edge summary card (signature element) */
+.receipt{
+  background:var(--white);
+  position:relative;
+  padding:20px 18px 22px;
+  margin:6px 0 22px;
+  filter:drop-shadow(0 8px 18px rgba(31,42,55,0.18));
+}
+.receipt::before, .receipt::after{
+  content:"";
+  position:absolute; left:0; right:0; height:10px;
+  background:
+    radial-gradient(circle at 8px 5px, transparent 6px, var(--white) 6.5px) 0 0/16px 10px repeat-x;
+}
+.receipt::before{ top:-1px; transform:scaleY(-1); }
+.receipt::after{ bottom:-1px; }
+.receipt h3{
+  margin:0 0 2px; font-size:14px; font-weight:800; text-align:center;
+}
+.receipt .sub-center{
+  text-align:center; font-size:10.5px; color:var(--ink-soft); font-family:'IBM Plex Mono', monospace; margin-bottom:14px;
+}
+.receipt-row{
+  display:flex; justify-content:space-between; font-size:13px; padding:6px 0;
+  border-bottom:1px dotted var(--line);
+}
+.receipt-row.total{
+  border-bottom:none; border-top:2px solid var(--ink); margin-top:6px; padding-top:10px;
+  font-weight:800; font-size:15px;
+}
+.receipt-row .v{font-family:'IBM Plex Mono', monospace; font-weight:600;}
+
+/* Empty state */
+.empty-state{
+  text-align:center; padding:50px 20px; color:var(--ink-soft);
+}
+.empty-state .ic{font-size:34px; margin-bottom:10px;}
+.empty-state p{font-size:13px; line-height:1.7; margin:0;}
+
+/* FAB */
+.fab{
+  position:fixed;
+  bottom:88px; left:50%;
+  transform:translateX(-50%);
+  width:58px;height:58px;border-radius:50%;
+  background:var(--stamp);
+  color:white; font-size:28px; font-weight:400;
+  display:none;
+  align-items:center;justify-content:center;
+  box-shadow:0 10px 24px -6px rgba(181,67,42,0.55);
+  border:3px solid var(--paper);
+  cursor:pointer; z-index:40;
+  max-width:480px;
+}
+.fab.show{display:flex;}
+.fab:active{transform:translateX(-50%) scale(0.92);}
+
+/* Bottom nav */
+.bottomnav{
+  position:fixed; bottom:0; left:0; right:0;
+  max-width:480px; margin:0 auto;
+  background:var(--white);
+  border-top:1px solid var(--line);
+  display:flex;
+  padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  z-index:35;
+}
+.nav-item{
+  flex:1; text-align:center; padding:6px 2px;
+  cursor:pointer; color:var(--ink-soft);
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+}
+.nav-item.active{ color:var(--stamp); }
+.nav-item .ic{font-size:19px;}
+.nav-item .lb{font-size:10px;font-weight:700;}
+
+/* ===== Modal / Sheet ===== */
+.overlay{
+  position:fixed; inset:0; background:rgba(31,42,55,0.45);
+  z-index:60; display:none;
+  backdrop-filter: blur(2px);
+}
+.overlay.show{display:block;}
+.sheet{
+  position:fixed; left:0; right:0; bottom:0;
+  max-width:480px; margin:0 auto;
+  background:var(--paper);
+  border-radius:24px 24px 0 0;
+  z-index:61;
+  max-height:88vh;
+  overflow-y:auto;
+  transform:translateY(100%);
+  transition:transform .28s cubic-bezier(.32,.72,0,1);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.sheet.show{ transform:translateY(0); }
+.sheet-handle{
+  width:38px;height:4px;border-radius:4px;background:var(--line);
+  margin:10px auto 4px;
+}
+.sheet-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 18px 14px;
+  border-bottom:1px solid var(--line);
+}
+.sheet-head h3{margin:0;font-size:16px;font-weight:800;}
+.sheet-close{
+  width:30px;height:30px;border-radius:50%;background:var(--paper-deep);
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  border:none;cursor:pointer;color:var(--ink);
+}
+.sheet-body{ padding:16px 18px 24px; }
+
+.field{ margin-bottom:16px; }
+.field label{
+  display:block; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:7px;
+}
+.field input, .field textarea, .field select{
+  width:100%; border:1.5px solid var(--line); border-radius:13px;
+  padding:13px 14px; font-size:15px; font-family:'Tajawal', sans-serif;
+  background:var(--white); color:var(--ink);
+}
+.field input:focus, .field textarea:focus, .field select:focus{
+  outline:none; border-color:var(--ink);
+}
+.field textarea{resize:none; min-height:64px;}
+.field input[type="date"]{
+  font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:14px;
+}
+.date-hint{
+  margin-top:7px; font-size:11.5px; color:var(--teal); font-weight:700;
+  display:flex; align-items:center; gap:5px;
+}
+.date-hint.is-past{ color:var(--gold); }
+.amount-input{
+  display:flex; align-items:center; gap:8px;
+  border:1.5px solid var(--line); border-radius:13px; padding:4px 14px;
+  background:var(--white);
+}
+.amount-input input{
+  border:none; padding:13px 0; font-size:22px; font-weight:700;
+  font-family:'IBM Plex Mono', monospace; flex:1; background:transparent;
+}
+.amount-input input:focus{outline:none;}
+.amount-input .cur{font-size:13px;color:var(--ink-soft);font-weight:700;}
+
+.chip-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.chip{
+  padding:9px 16px; border-radius:20px; border:1.5px solid var(--line);
+  font-size:12.5px; font-weight:700; cursor:pointer; background:var(--white); color:var(--ink-soft);
+  display:flex; align-items:center; gap:6px;
+}
+.chip.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+.chip.add-new{ border-style:dashed; color:var(--ink-soft); }
+
+.btn-primary{
+  width:100%; padding:15px; border-radius:14px; border:none;
+  background:var(--stamp); color:white; font-size:15px; font-weight:800;
+  cursor:pointer; margin-top:6px;
+}
+.btn-primary:active{ transform:scale(0.98); }
+.btn-secondary{
+  width:100%; padding:14px; border-radius:14px; border:1.5px solid var(--line);
+  background:transparent; color:var(--ink-soft); font-size:14px; font-weight:700;
+  cursor:pointer; margin-top:10px;
+}
+.btn-danger-text{
+  width:100%; text-align:center; padding:12px; color:var(--stamp);
+  font-size:13px; font-weight:700; cursor:pointer; background:none; border:none;
+}
+
+/* Item row inside add-sale sheet (list of items for the shift) */
+.item-list{ margin-bottom:14px; }
+.item-row{
+  display:flex; align-items:center; gap:10px;
+  background:var(--white); border:1px solid var(--line); border-radius:13px;
+  padding:11px 12px; margin-bottom:8px;
+}
+.item-row .ic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.item-row .nm{flex:1; font-size:13px; font-weight:700;}
+.item-row .am{font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:14px;}
+.item-row .del{color:var(--ink-soft); font-size:16px; cursor:pointer; padding:4px;}
+.add-item-row{
+  display:flex; gap:8px; align-items:flex-end;
+}
+.add-item-row .cat-select{flex:1.3;}
+.add-item-row .amt-input{flex:1;}
+.add-item-row input, .add-item-row select{
+  width:100%; border:1.5px solid var(--line); border-radius:12px;
+  padding:11px 10px; font-size:13.5px; font-family:'Tajawal', sans-serif; background:var(--white);
+}
+.add-item-row button{
+  width:42px;height:42px;border-radius:12px; background:var(--ink); color:var(--paper);
+  border:none; font-size:20px; flex-shrink:0; cursor:pointer;
+}
+
+.toast{
+  position:fixed; bottom:96px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--ink); color:var(--paper); padding:11px 22px; border-radius:30px;
+  font-size:13px; font-weight:700; z-index:80; opacity:0;
+  transition:.25s; pointer-events:none;
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+.warn-box{
+  background:#FBEFE9; border:1px solid #E8C7B5; border-radius:13px;
+  padding:12px 14px; font-size:12.5px; color:var(--stamp-deep); margin-bottom:14px; line-height:1.6;
+}
+
+::-webkit-scrollbar{ display:none; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="brand">
+        <div class="brand-mark"></div>
+        <div class="brand-text">
+          <h1 id="shopName">الشبعاني للطباعة والتصميم</h1>
+          <p id="todayDateLabel">—</p>
+        </div>
+      </div>
+      <div class="icon-btn" onclick="openSettings()">⚙</div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-view="home" onclick="switchTab('home')">اليوم</div>
+      <div class="tab" data-view="report" onclick="switchTab('report')">تقرير الشهر</div>
+      <div class="tab" data-view="expenses" onclick="switchTab('expenses')">المصروفات</div>
+    </div>
+  </div>
+
+  <!-- HOME VIEW -->
+  <div class="view" id="view-home">
+    <div class="day-card" id="todayCard"></div>
+    <div class="backdate-btn" onclick="openBackdateSale()">
+      <span>🕓 تسجيل مبيعات يوم سابق (مثل الأمس)</span>
+    </div>
+    <div class="section-title"><span>أيام هذا الشهر</span><div class="ln"></div></div>
+    <div id="monthDaysList"></div>
+  </div>
+
+  <!-- REPORT VIEW -->
+  <div class="view hidden" id="view-report">
+    <div class="month-switch">
+      <button onclick="changeMonth(-1)">‹</button>
+      <div class="month-label">
+        <div class="m" id="reportMonthLabel">—</div>
+        <div class="range" id="reportMonthRange">—</div>
+      </div>
+      <button onclick="changeMonth(1)">›</button>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card income">
+        <div class="lbl">إجمالي المبيعات</div>
+        <div class="val" id="repIncome">٠</div>
+      </div>
+      <div class="stat-card expense">
+        <div class="lbl">إجمالي المصروفات</div>
+        <div class="val" id="repExpense">٠</div>
+      </div>
+      <div class="stat-card profit" id="repProfitCard">
+        <div class="lbl">صافي الربح للشهر</div>
+        <div class="val" id="repProfit">٠</div>
+        <div class="sub" id="repProfitSub"></div>
+      </div>
+    </div>
+
+    <div class="section-title"><span>المبيعات حسب النوع</span><div class="ln"></div></div>
+    <div id="salesBreakdown"></div>
+
+    <div class="section-title"><span>المصروفات حسب البند</span><div class="ln"></div></div>
+    <div id="expenseBreakdown"></div>
+
+    <div class="receipt">
+      <h3 id="receiptShopName">الشبعاني لخدمات الطباعة والتصميم</h3>
+      <div class="sub-center" id="receiptMonth">—</div>
+      <div class="receipt-row"><span>مبيعات الفترة الصباحية</span><span class="v" id="rMorning">٠</span></div>
+      <div class="receipt-row"><span>مبيعات الفترة المسائية</span><span class="v" id="rEvening">٠</span></div>
+      <div class="receipt-row"><span>إجمالي المبيعات</span><span class="v" id="rIncome">٠</span></div>
+      <div class="receipt-row"><span>مرتبات الموظفين</span><span class="v" id="rSalary">٠</span></div>
+      <div class="receipt-row"><span>الإيجار</span><span class="v" id="rRent">٠</span></div>
+      <div class="receipt-row"><span>مواد ومصروفات أخرى</span><span class="v" id="rMaterials">٠</span></div>
+      <div class="receipt-row"><span>إجمالي المصروفات</span><span class="v" id="rExpense">٠</span></div>
+      <div class="receipt-row total"><span>الصافي</span><span class="v" id="rNet">٠</span></div>
+    </div>
+  </div>
+
+  <!-- EXPENSES VIEW -->
+  <div class="view hidden" id="view-expenses">
+    <div class="month-switch">
+      <button onclick="changeMonth(-1)">‹</button>
+      <div class="month-label">
+        <div class="m" id="expMonthLabel">—</div>
+        <div class="range" id="expMonthRange">—</div>
+      </div>
+      <button onclick="changeMonth(1)">›</button>
+    </div>
+    <div id="expensesList"></div>
+  </div>
+
+</div>
+
+<!-- FAB (add expense, shows on expenses tab) -->
+<div class="fab" id="fabBtn" onclick="openExpenseSheet()">＋</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottomnav">
+  <div class="nav-item active" data-view="home" onclick="switchTab('home')">
+    <div class="ic">🏠</div><div class="lb">اليوم</div>
+  </div>
+  <div class="nav-item" data-view="report" onclick="switchTab('report')">
+    <div class="ic">📊</div><div class="lb">التقرير</div>
+  </div>
+  <div class="nav-item" data-view="expenses" onclick="switchTab('expenses')">
+    <div class="ic">🧾</div><div class="lb">المصروفات</div>
+  </div>
+</div>
+
+<!-- OVERLAY + SHEETS -->
+<div class="overlay" id="overlay" onclick="closeAllSheets()"></div>
+
+<!-- Sheet: Add Sale -->
+<div class="sheet" id="sheetSale">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h3 id="saleSheetTitle">مبيعات الفترة الصباحية</h3>
+    <button class="sheet-close" onclick="closeAllSheets()">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="field" style="margin-bottom:14px;">
+      <label>التاريخ</label>
+      <input type="date" id="saleDateInput" onchange="onSaleDateChanged()">
+      <div id="saleDateHint" class="date-hint"></div>
+    </div>
+    <div class="item-list" id="saleItemList"></div>
+    <div class="add-item-row">
+      <div class="cat-select">
+        <select id="saleCatSelect"></select>
+      </div>
+      <div class="amt-input">
+        <input type="number" inputmode="decimal" id="saleAmtInput" placeholder="المبلغ">
+      </div>
+      <button onclick="addSaleItem()">＋</button>
+    </div>
+    <div style="margin-top:14px;">
+      <div class="chip add-new" onclick="promptNewCategory('sale')">+ نوع مبيعات جديد</div>
+    </div>
+    <div class="field" style="margin-top:16px;">
+      <label>ملاحظات (اختياري)</label>
+      <textarea id="saleNotes" placeholder="مثال: زيادة طلب نسخ ملونة اليوم"></textarea>
+    </div>
+    <div class="day-total" style="margin-top:4px;">
+      <div class="t-lbl">إجمالي الفترة</div>
+      <div class="t-val" id="saleShiftTotal">٠</div>
+    </div>
+    <button class="btn-primary" onclick="saveSaleShift()">حفظ مبيعات الفترة</button>
+  </div>
+</div>
+
+<!-- Sheet: Add Expense -->
+<div class="sheet" id="sheetExpense">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h3>تسجيل مصروف</h3>
+    <button class="sheet-close" onclick="closeAllSheets()">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="field">
+      <label>التاريخ</label>
+      <input type="date" id="expDate">
+    </div>
+    <div class="field">
+      <label>البند</label>
+      <div class="chip-row" id="expCatChips"></div>
+    </div>
+    <div class="field">
+      <label>المبلغ</label>
+      <div class="amount-input">
+        <input type="number" inputmode="decimal" id="expAmount" placeholder="٠">
+        <span class="cur" id="expCurLabel">د.ل</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>وصف (اختياري)</label>
+      <input type="text" id="expDesc" placeholder="مثال: ورق A4 - كرتون، أو مرتب شهر يونيو">
+    </div>
+    <button class="btn-primary" onclick="saveExpense()">حفظ المصروف</button>
+    <button class="btn-secondary hidden" id="expDeleteBtn" onclick="deleteCurrentExpense()">حذف هذا المصروف</button>
+  </div>
+</div>
+
+<!-- Sheet: Settings -->
+<div class="sheet" id="sheetSettings">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h3>الإعدادات</h3>
+    <button class="sheet-close" onclick="closeAllSheets()">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="field">
+      <label>اسم المكتب</label>
+      <input type="text" id="settingShopName" placeholder="الشبعاني لخدمات الطباعة والتصميم">
+    </div>
+    <div class="field">
+      <label>رمز العملة</label>
+      <input type="text" id="settingCurrency" placeholder="د.ل">
+    </div>
+    <div class="section-title" style="margin-top:4px;"><span>أنواع المبيعات</span><div class="ln"></div></div>
+    <div class="chip-row" id="manageSaleCats"></div>
+    <div class="section-title"><span>بنود المصروفات</span><div class="ln"></div></div>
+    <div class="chip-row" id="manageExpenseCats"></div>
+
+    <div class="section-title"><span>النسخ الاحتياطي</span><div class="ln"></div></div>
+    <div class="warn-box">
+      بياناتك محفوظة على هذا الجهاز فقط. يُنصح بتصدير نسخة احتياطية بشكل دوري (كل شهر مثلاً) لحفظها في مكان آمن.
+    </div>
+    <button class="btn-secondary" onclick="exportBackup()">تصدير نسخة احتياطية (ملف)</button>
+    <button class="btn-secondary" onclick="document.getElementById('importFile').click()">استيراد نسخة احتياطية</button>
+    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importBackup(event)">
+
+    <button class="btn-primary" onclick="saveSettings()">حفظ الإعدادات</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
